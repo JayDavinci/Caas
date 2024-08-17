@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task List Application</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-image: url(bglita2.png);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            background-size: cover;
+            background-position: center;
+            align-items: center;
+            height: 100vh;
+            transition: background 0.5s;
+        }
+
+        .dark-mode {
+            background-image: url(darkmodebg.png);
+            color: #ffffff;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            width: 400px;
+            max-width: 100%;
+            transition: background-color 0.5s, color 0.5s;
+        }
+
+        .dark-mode .container {
+            background-color: #333;
+            color: #fff;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            transition: color 0.5s;
+        }
+
+        .dark-mode h1, .dark-mode h2 {
+            color: #fff;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        input[type="text"], 
+        input[type="date"],
+        select {
+            width: 60%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.5s, color 0.5s;
+        }
+
+        .dark-mode input[type="text"],
+        .dark-mode input[type="date"],
+        .dark-mode select {
+            background-image: #555;
+            color: #555;
+            border: 1px solid #444;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.5s;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        /* Light Switch Styles */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+            margin-bottom: 20px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .dark-mode .slider {
+            background-color: #2196F3;
+        }
+
+        #membersList, #taskList {
+            margin-top: 20px;
+        }
+
+        .member, .task {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.5s, color 0.5s;
+        }
+
+        .dark-mode .member, .dark-mode .task {
+            background-color: #444;
+            color: #fff;
+        }
+
+        .task span {
+            margin-right: auto;
+            display: flex;
+            align-items: center;
+        }
+
+        .task {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .task button {
+            margin-left: 10px;
+        }
+
+        .priority-high {
+            color: #dc3545; 
+        }
+
+        .priority-medium {
+            color: #ffc107; 
+        }
+
+        .priority-low {
+            color: #28a745;
+        }
+
+        .delete-btn, .status-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background-color 0.5s;
+        }
+
+        .delete-btn:hover, .status-btn:hover {
+            background-color: #c82333;
+        }
+
+        .dark-mode .delete-btn, .dark-mode .status-btn {
+            background-color: #dc3545;
+        }
+
+        .dark-mode .delete-btn:hover, .dark-mode .status-btn:hover {
+            background-color: #c82333;
+        }
+
+        .complete-task {
+            text-decoration: line-through;
+            color: black;
+        }
+
+        .edit-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background-color 0.5s;
+        }
+
+        .edit-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .dark-mode .edit-btn {
+            background-color: #007bff;
+        }
+
+        .dark-mode .edit-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 17px;
+            opacity: 0;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+
+        .toast.show {
+            visibility: visible;
+            opacity: 80%;
+        }
+    </style>
+</head>
+<body onload="loadData()">
+    <div class="container">
+        <img src="Lita-removebg-preview.png" alt="" style="width: 100px; height: 100px; margin: 0 auto; display: block;">
+        <h1 id="time" style="text-align: center; font-size: 24px; margin-bottom: 10px;"></h1>
+        <h1>Hello, Welcome!</h1>
+        <!-- toggle dark mode -->
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+            <label class="switch">
+                <input type="checkbox" id="toggleDarkMode" onchange="toggleDarkMode()">
+                <span class="slider"></span>
+            </label>
+            <p style="margin: 0;">Switch Theme</p>
+        </div>
+        
+        <div class="form-group">
+            <input type="text" id="memberName" placeholder="Name">
+            <button onclick="addMember()">Add Member</button>
+        </div>
+
+        <div class="form-group">
+            <input type="text" id="taskName" placeholder="Add Task">
+            <button id="taskActionButton" onclick="addTask()" style="margin-left: 12px; width: 120px;">Add Task</button>
+        </div>
+        
+        <div class="form-group">
+            <input type="date" id="dueDate">
+            <select id="assignMember">
+                <option value="" disabled selected>Assign to Member</option>
+            </select>
+            <select id="priority">
+                <option value="" disabled selected>Select Priority</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <input type="text" id="searchTask" placeholder="Search Tasks">
+            <button onclick="filterTasks()" style="margin-left: 12px;">Search</button>
+            <select id="filterStatus" onchange="filterTasks()">
+                <option value="all">All Tasks</option>
+                <option value="complete">Completed Tasks</option>
+                <option value="incomplete">Incomplete Tasks</option>
+            </select>
+        </div>
+
+        <div id="membersList"></div>
+        <h2>List Tasks</h2>
+        <div id="taskList"></div>
+        <div id="toast" class="toast"></div>
+    </div>
+    
+    <script>
+        let members = [];
+        let tasks = [];
+        let editingTaskIndex = null;
+        const toast = document.getElementById("toast");
+
+        function showToast(message) {
+            toast.textContent = message;
+            toast.className = "toast show";
+            setTimeout(() => {
+                toast.className = toast.className.replace("show", "");
+            }, 3000);
+        }
+
+        function updateTime() {
+            const timeElement = document.getElementById("time");
+            const now = new Date();
+            const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            timeElement.textContent = formattedTime;
+        }
+
+        setInterval(updateTime, 1000);
+
+        function addMember() {
+            const memberName = document.getElementById("memberName").value.trim();
+            if (memberName !== "") {
+                members.push(memberName);
+                document.getElementById("memberName").value = "";
+                displayMembers();
+                updateMemberDropdown();
+                showToast('Member added successfully!');
+                saveData();
+            }
+        }
+
+        function displayMembers() {
+            const membersList = document.getElementById("membersList");
+            membersList.innerHTML = members.map((member, index) => `
+                <div class="member">
+                    ${member}
+                    <button class="delete-btn" onclick="deleteMember(${index})">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        function deleteMember(index) {
+            members.splice(index, 1);
+            displayMembers();
+            updateMemberDropdown();
+            showToast('Member deleted successfully!');
+            saveData();
+        }
+
+        function updateMemberDropdown() {
+            const assignMember = document.getElementById("assignMember");
+            assignMember.innerHTML = `<option value="" disabled selected>Assign to Member</option>` +
+                members.map(member => `<option value="${member}">${member}</option>`).join('');
+        }
+
+        function addTask() {
+            const taskName = document.getElementById("taskName").value.trim();
+            const dueDate = document.getElementById("dueDate").value;
+            const assignMember = document.getElementById("assignMember").value;
+            const priority = document.getElementById("priority").value;
+            
+            if (editingTaskIndex !== null) {
+                tasks[editingTaskIndex] = { name: taskName, member: assignMember, due: dueDate, status: false, priority: priority };
+                document.getElementById("taskActionButton").innerText = "Add Task";
+                editingTaskIndex = null;
+                showToast('Task edited successfully!');
+            } else {
+                if (taskName !== "" && assignMember !== "" && dueDate !== "") {
+                    tasks.push({ name: taskName, member: assignMember, due: dueDate, status: false, priority: priority });
+                    showToast('Task added successfully!');
+                }
+            }
+            document.getElementById("taskName").value = "";
+            document.getElementById("dueDate").value = "";
+            document.getElementById("assignMember").value = "";
+            document.getElementById("priority").value = "";
+            filterTasks();
+            saveData();
+        }
+
+        function displayTasks(filteredTasks = tasks) {
+            const taskList = document.getElementById("taskList");
+            taskList.innerHTML = filteredTasks.map((task, index) => `
+                <div class="task ${task.status ? 'complete-task' : ''}">
+                    <span class="${task.priority === 'High' ? 'priority-high' : task.priority === 'Medium' ? 'priority-medium' : 'priority-low'}">${task.name} - ${task.member} - ${task.due}</span>
+                    <button class="status-btn" onclick="toggleTaskStatus(${index})">${task.status ? 'undo' : 'Complete'}</button>
+                    <button class="edit-btn" onclick="editTask(${index})">Edit</button>
+                    <button class="delete-btn" onclick="deleteTask(${index})">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        function filterTasks() {
+            const searchQuery = document.getElementById('searchTask').value.toLowerCase();
+            const filterStatus = document.getElementById('filterStatus').value;
+
+            const filteredTasks = tasks.filter(task => {
+                const matchesSearch = task.name.toLowerCase().includes(searchQuery) || 
+                                      task.member.toLowerCase().includes(searchQuery) || 
+                                      task.due.includes(searchQuery);
+                const matchesStatus = (filterStatus === 'all') || 
+                                     (filterStatus === 'complete' && task.status) || 
+                                     (filterStatus === 'incomplete' && !task.status);
+
+                return matchesSearch && matchesStatus;
+            });
+
+            displayTasks(filteredTasks);
+        }
+
+        function toggleTaskStatus(index) {
+            tasks[index].status = !tasks[index].status;
+            filterTasks();
+            saveData();
+            showToast('Task status updated successfully!');
+        }
+
+        function editTask(index) {
+            const task = tasks[index];
+            document.getElementById("taskName").value = task.name;
+            document.getElementById("dueDate").value = task.due;
+            document.getElementById("assignMember").value = task.member;
+            document.getElementById("priority").value = task.priority;
+            document.getElementById("taskActionButton").innerText = "Save Task";
+            editingTaskIndex = index;
+        }
+
+        function deleteTask(index) {
+            tasks.splice(index, 1);
+            filterTasks();
+            saveData();
+            showToast('Task deleted successfully!');
+        }
+
+        function saveData() {
+            localStorage.setItem('members', JSON.stringify(members));
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+
+        function loadData() {
+            const storedMembers = localStorage.getItem('members');
+            const storedTasks = localStorage.getItem('tasks');
+            if (storedMembers) {
+                members = JSON.parse(storedMembers);
+                displayMembers();
+                updateMemberDropdown();
+            }
+            if (storedTasks) {
+                tasks = JSON.parse(storedTasks);
+                filterTasks();
+            }
+        }
+
+        function toggleDarkMode() {
+            const body = document.body;
+            body.classList.toggle("dark-mode");
+            const isDarkMode = body.classList.contains("dark-mode");
+            localStorage.setItem('darkMode', isDarkMode);
+        }
+
+        function applySavedTheme() {
+            const isDarkMode = localStorage.getItem('darkMode') === 'true';
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+                document.getElementById('toggleDarkMode').checked = true;
+            }
+        }
+        applySavedTheme();
+    </script>
+</body>
+</html>
